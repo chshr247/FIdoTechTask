@@ -1,0 +1,90 @@
+<section class="toolbar">
+  <mat-form-field appearance="outline" class="search" subscriptSizing="dynamic">
+    <mat-label>Пошук за автором</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input matInput [formControl]="searchControl" placeholder="Напр. Кирієнко" autocomplete="off" />
+    @if (searchControl.value) {
+      <button matSuffix mat-icon-button aria-label="Очистити пошук" (click)="clearSearch()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </mat-form-field>
+
+  <button mat-flat-button class="create" (click)="openCreate()">
+    <mat-icon>add</mat-icon>
+    Нова цитата
+  </button>
+</section>
+
+<div class="progress-slot">
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+</div>
+
+@if (loadError(); as error) {
+  <div class="state state-error" role="alert">
+    <mat-icon>cloud_off</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-stroked-button (click)="reload()">Спробувати знову</button>
+  </div>
+} @else if (page().items.length === 0 && !loading()) {
+  <div class="state">
+    <mat-icon>format_quote</mat-icon>
+    @if (search()) {
+      <p>Немає цитат автора, що містить «{{ search() }}».</p>
+      <button mat-stroked-button (click)="clearSearch()">Скинути пошук</button>
+    } @else {
+      <p>Цитат ще немає. Додайте першу!</p>
+    }
+  </div>
+} @else {
+  <ul class="grid" [class.dimmed]="loading()">
+    @for (quote of page().items; track quote.id) {
+      <li>
+        <article class="quote" [class.highlight]="quote.id === highlightId()">
+          <span class="mono" aria-hidden="true">{{ quote.author.charAt(0) }}</span>
+          <!-- Short quotes get poster-sized type, long ones shrink to fit. -->
+          <blockquote
+            [attr.data-size]="quote.text.length > 160 ? 'm' : quote.text.length > 60 ? 'l' : 'xl'"
+          >
+            {{ quote.text }}
+          </blockquote>
+          <div class="footer">
+            <span class="author">{{ quote.author }}</span>
+            <span class="actions">
+              <button
+                mat-icon-button
+                matTooltip="Редагувати"
+                [attr.aria-label]="'Редагувати цитату автора ' + quote.author"
+                (click)="openEdit(quote)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                class="delete"
+                matTooltip="Видалити"
+                [attr.aria-label]="'Видалити цитату автора ' + quote.author"
+                (click)="confirmDelete(quote)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
+          </div>
+        </article>
+      </li>
+    }
+  </ul>
+}
+
+<mat-paginator
+  [length]="page().total"
+  [pageIndex]="pageIndex()"
+  [pageSize]="pageSize()"
+  [pageSizeOptions]="pageSizeOptions"
+  [disabled]="loading()"
+  showFirstLastButtons
+  (page)="onPage($event)"
+  aria-label="Вибір сторінки цитат"
+/>

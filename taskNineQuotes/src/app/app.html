@@ -1,0 +1,16 @@
+<mat-toolbar class="app-bar">
+  <img class="logo" src="logo-light.png" alt="НаУКМА" width="40" height="38" />
+  <span class="brand">Цитатник</span>
+  <button
+    mat-icon-button
+    class="theme"
+    [attr.aria-label]="dark() ? 'Увімкнути світлу тему' : 'Увімкнути темну тему'"
+    (click)="toggleTheme()"
+  >
+    <mat-icon>{{ dark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
+</mat-toolbar>
+
+<main class="container">
+  <app-quote-list />
+</main>

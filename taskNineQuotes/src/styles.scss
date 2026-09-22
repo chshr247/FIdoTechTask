@@ -1,0 +1,142 @@
+@use '@angular/material' as mat;
+
+// Meme-card palette, taken from the classic "quote + author strip" template.
+// --q-ink is the navy of the NaUKMA logo.
+:root {
+  --q-blue: #1f7bff;
+  --q-cyan: #bdebff;
+  --q-ink: #062159;
+  --q-display: 'Caveat', cursive;
+  --q-heading: 'Montserrat', sans-serif;
+  // light-dark() follows the color-scheme set on <html>, so the theme toggle drives these too.
+  --q-shadow: light-dark(var(--q-ink), var(--q-cyan));
+  --q-grid: light-dark(rgb(6 33 89 / 8%), rgb(255 255 255 / 6%));
+  --q-margin: light-dark(rgb(229 72 77 / 55%), rgb(255 107 107 / 40%));
+}
+
+html {
+  color-scheme: light dark;
+  @include mat.theme(
+    (
+      color: mat.$azure-palette,
+      typography: (
+        plain-family: 'Montserrat, sans-serif',
+        brand-family: 'Montserrat, sans-serif',
+      ),
+      density: 0,
+    )
+  );
+  // Posters have square corners: flatten every Material shape.
+  @include mat.theme-overrides(
+    (
+      primary: var(--q-blue),
+      on-primary: #fff,
+      corner-extra-small: 0px,
+      corner-small: 0px,
+      corner-medium: 0px,
+      corner-large: 0px,
+      corner-extra-large: 0px,
+      corner-full: 0px,
+    )
+  );
+}
+
+html,
+body {
+  height: 100%;
+}
+
+// Notebook page: squared paper, as if the quotes were jotted down during a lecture.
+body {
+  margin: 0;
+  background-color: var(--mat-sys-surface-container-low);
+  background-image:
+    linear-gradient(var(--q-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--q-grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+}
+
+// Red margin line just left of the content column (max-width 1100px, see app.scss).
+body::after {
+  content: '';
+  position: fixed;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: max(6px, calc(50% - 566px));
+  width: 2px;
+  background: var(--q-margin);
+  pointer-events: none;
+}
+
+// Dialogs reuse the card anatomy: blue title block, content, cyan action strip.
+.meme-dialog {
+  @include mat.dialog-overrides(
+    (
+      subhead-color: #fff,
+      subhead-weight: 800,
+    )
+  );
+  @include mat.form-field-overrides(
+    (
+      outlined-outline-color: var(--q-shadow),
+      outlined-outline-width: 2px,
+      outlined-focus-outline-width: 3px,
+    )
+  );
+
+  .mat-mdc-dialog-surface {
+    box-shadow: 8px 8px 0 var(--q-shadow);
+  }
+
+  .mat-mdc-dialog-title {
+    margin: 0 0 16px;
+    padding: 20px 24px;
+    background: var(--q-blue);
+    font-family: var(--q-heading);
+
+    &::before {
+      display: none;
+    }
+  }
+
+  .mat-mdc-dialog-actions {
+    padding: 12px 24px;
+    background: var(--q-cyan);
+
+    .mat-mdc-button:not(:disabled) {
+      color: var(--q-ink);
+    }
+  }
+}
+
+.snack-success {
+  @include mat.snack-bar-overrides(
+    (
+      container-color: var(--q-blue),
+      supporting-text-color: #fff,
+      button-color: var(--q-cyan),
+    )
+  );
+}
+
+.snack-error {
+  @include mat.snack-bar-overrides(
+    (
+      container-color: var(--mat-sys-error-container),
+      supporting-text-color: var(--mat-sys-on-error-container),
+      button-color: var(--mat-sys-on-error-container),
+    )
+  );
+}
+
+.danger {
+  @include mat.button-overrides(
+    (
+      filled-container-color: var(--mat-sys-error),
+      filled-label-text-color: var(--mat-sys-on-error),
+    )
+  );
+}

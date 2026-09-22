@@ -1,0 +1,49 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Редагувати цитату' : 'Нова цитата' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Автор</mat-label>
+      <input matInput formControlName="author" autocomplete="off" cdkFocusInitial />
+      <mat-hint align="end" [class.over]="authorLength() > limits.author">
+        {{ authorLength() }} / {{ limits.author }}
+      </mat-hint>
+      @if (form.controls.author.hasError('required')) {
+        <mat-error>Вкажіть автора</mat-error>
+      } @else if (form.controls.author.hasError('blank')) {
+        <mat-error>Автор не може складатися лише з пробілів</mat-error>
+      } @else if (form.controls.author.hasError('maxlength')) {
+        <mat-error>Максимум {{ limits.author }} символів</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Текст цитати</mat-label>
+      <textarea matInput formControlName="text" rows="6"></textarea>
+      <mat-hint align="end" [class.over]="textLength() > limits.text">
+        {{ textLength() }} / {{ limits.text }}
+      </mat-hint>
+      @if (form.controls.text.hasError('required')) {
+        <mat-error>Введіть текст цитати</mat-error>
+      } @else if (form.controls.text.hasError('blank')) {
+        <mat-error>Текст не може складатися лише з пробілів</mat-error>
+      } @else if (form.controls.text.hasError('maxlength')) {
+        <mat-error>Максимум {{ limits.text }} символів</mat-error>
+      }
+    </mat-form-field>
+
+    @if (serverError(); as error) {
+      <p class="server-error" role="alert">{{ error }}</p>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close [disabled]="saving()">Скасувати</button>
+    <button mat-flat-button type="submit" [disabled]="!canSubmit()">
+      @if (saving()) {
+        <mat-spinner diameter="18" class="btn-spinner" />
+      }
+      {{ isEdit ? 'Зберегти' : 'Створити' }}
+    </button>
+  </mat-dialog-actions>
+</form>
